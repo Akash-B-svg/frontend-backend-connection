@@ -1,0 +1,127 @@
+//Main class-
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class FebeApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(FebeApplication.class, args);
+	}
+}
+
+//Employee class-
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jdk.jfr.Enabled;
+
+@Entity
+public class Employee {
+    @Id
+    private int empId;
+    private String empName;
+    private String empDept;
+    private String empBranch;
+
+    public Employee() {
+    }
+
+    public Employee(int empId, String empName, String empDept, String empBranch) {
+        this.empId = empId;
+        this.empName = empName;
+        this.empDept = empDept;
+        this.empBranch = empBranch;
+    }
+
+    public int getEmpId() {
+        return empId;
+    }
+
+    public void setEmpId(int empId) {
+        this.empId = empId;
+    }
+
+    public String getEmpName() {
+        return empName;
+    }
+
+    public void setEmpName(String empName) {
+        this.empName = empName;
+    }
+
+    public String getEmpDept() {
+        return empDept;
+    }
+
+    public void setEmpDept(String empDept) {
+        this.empDept = empDept;
+    }
+
+    public String getEmpBranch() {
+        return empBranch;
+    }
+
+    public void setEmpBranch(String empBranch) {
+        this.empBranch = empBranch;
+    }
+}
+
+//Controller class-
+import FEBEConnection.example.FEBE.model.Employee;
+import FEBEConnection.example.FEBE.service.EmployeeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@CrossOrigin(origins = "http://127.0.0.1:5500")
+public class EmployeeController {
+
+    @Autowired
+    EmployeeService employeeService;
+
+    @GetMapping("empDetails")
+    public List<Employee> getEmployees(){
+        return employeeService.getEmployees();
+    }
+
+    @PostMapping("empDetails")
+    public void addEmployees(@RequestParam("empId") int empid,@RequestParam("empName") String empname,@RequestParam("empDept") String empdept,@RequestParam("empBranch") String empbranch)
+    {
+        employeeService.updateEmployees(empid,empname,empdept,empbranch);
+    }
+}
+
+//Service class-
+import FEBEConnection.example.FEBE.Repo.EmployeeRepo;
+import FEBEConnection.example.FEBE.model.Employee;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+@Service
+public class EmployeeService {
+
+    @Autowired
+    EmployeeRepo employeeRepo;
+    public void updateEmployees(int empid,String empname,String empdept,String empbranch) {
+        Employee emp=new Employee(empid,empname,empdept,empbranch);
+        employeeRepo.save(emp);
+    }
+
+    public List<Employee> getEmployees() {
+        return employeeRepo.findAll();
+    }
+}
+
+Repositary Interface-
+import FEBEConnection.example.FEBE.model.Employee;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface EmployeeRepo extends JpaRepository<Employee,Integer> {
+}
+
